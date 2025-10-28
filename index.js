@@ -1,3 +1,4 @@
+// index.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -8,11 +9,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const FRONTEND_URL = "https://www.solandriani.com";
+// Lista de orígenes permitidos (tu frontend en producción)
+const allowedOrigins = [
+  "https://www.solandriani.com",
+  "https://solandriani.com",
+  "https://sol-andriani-frontend.vercel.app" // si pruebas desde Vercel directamente
+];
 
+// Configuración de CORS
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || origin === FRONTEND_URL) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("CORS no permitido"));
@@ -21,9 +28,11 @@ app.use(cors({
   credentials: true,
 }));
 
+// Parseo de JSON y URL-encoded
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// Endpoint de contacto
 app.post("/api/contact", async (req, res) => {
   const { name, from, subject, message } = req.body;
 
@@ -34,11 +43,12 @@ app.post("/api/contact", async (req, res) => {
   console.log("📩 Datos recibidos:", { name, from, subject, message });
 
   try {
+    // Transportador de Nodemailer usando Gmail con App Password
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER,  // tu email en Render
+        pass: process.env.EMAIL_PASS,  // app password de Gmail
       },
     });
 
@@ -64,6 +74,7 @@ app.post("/api/contact", async (req, res) => {
     res.status(500).json({ error: "Error al enviar el correo" });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
