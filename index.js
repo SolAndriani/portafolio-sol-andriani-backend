@@ -8,18 +8,18 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
+const FRONTEND_URL = "https://www.solandriani.com";
+
 app.use(cors({
-  origin: (origin, callback) => {
-    console.log("Solicitud CORS desde:", origin);
-    callback(null, true);
-  },
+  origin: FRONTEND_URL,
   credentials: true,
 }));
 
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// === RUTA DE CONTACTO ===
+
 app.post("/api/contact", async (req, res) => {
   const { name, from, subject, message } = req.body;
 
@@ -30,7 +30,7 @@ app.post("/api/contact", async (req, res) => {
   console.log("📩 Datos recibidos:", { name, from, subject, message });
 
   try {
-    // Configurar transporte con Gmail
+    
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -39,13 +39,13 @@ app.post("/api/contact", async (req, res) => {
       },
     });
 
-    // Configurar el contenido del correo
+
     const mailOptions = {
       from: from,
-      to: process.env.EMAIL_USER, // te lo envías a vos misma
+      to: process.env.EMAIL_USER, 
       subject: `Nuevo mensaje de ${name}: ${subject}`,
       html: `
-        <h2>Nuevo mensaje desde tu portafolio 💌</h2>
+        <h2>Nuevo mensaje desde tu portafolio</h2>
         <p><strong>Nombre:</strong> ${name}</p>
         <p><strong>Email:</strong> ${from}</p>
         <p><strong>Asunto:</strong> ${subject}</p>
@@ -54,18 +54,18 @@ app.post("/api/contact", async (req, res) => {
       `,
     };
 
-    // Enviar el correo
+    // Enviar correo
     await transporter.sendMail(mailOptions);
 
-    console.log("✅ Correo enviado con éxito");
+    console.log("Correo enviado con éxito");
     res.status(200).json({ message: "Correo enviado correctamente ✅" });
   } catch (error) {
-    console.error("❌ Error al enviar el correo:", error);
+    console.error("Error al enviar el correo:", error);
     res.status(500).json({ error: "Error al enviar el correo" });
   }
 });
 
-// Arrancar servidor
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
