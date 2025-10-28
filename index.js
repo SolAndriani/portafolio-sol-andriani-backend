@@ -1,4 +1,3 @@
-// index.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -9,11 +8,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// URLs de frontend permitidas
+
 const allowedOrigins = [
   "https://www.solandriani.com",
   "https://solandriani.com",
-  "https://sol-andriani-frontend.vercel.app", // tu frontend en Vercel
+  "https://sol-andriani-frontend.vercel.app" 
 ];
 
 app.use(cors({
@@ -21,14 +20,17 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.error("CORS bloqueado para:", origin);
       callback(new Error("CORS no permitido"));
     }
   },
   credentials: true,
 }));
 
+
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
+
 
 app.post("/api/contact", async (req, res) => {
   const { name, from, subject, message } = req.body;
@@ -43,8 +45,8 @@ app.post("/api/contact", async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER,  // tu correo en Render
-        pass: process.env.EMAIL_PASS,  // app password de Gmail
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS, 
       },
     });
 
@@ -70,6 +72,7 @@ app.post("/api/contact", async (req, res) => {
     res.status(500).json({ error: "Error al enviar el correo" });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
