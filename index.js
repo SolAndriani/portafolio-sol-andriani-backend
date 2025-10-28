@@ -8,20 +8,22 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// URL del frontend en producción
 const FRONTEND_URL = "https://www.solandriani.com";
 
-// Configurar CORS
 app.use(cors({
-  origin: FRONTEND_URL,
+  origin: (origin, callback) => {
+    if (!origin || origin === FRONTEND_URL) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS no permitido"));
+    }
+  },
   credentials: true,
 }));
 
-// Parsear JSON y URL encoded
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// === RUTA DE CONTACTO ===
 app.post("/api/contact", async (req, res) => {
   const { name, from, subject, message } = req.body;
 
@@ -32,19 +34,17 @@ app.post("/api/contact", async (req, res) => {
   console.log("📩 Datos recibidos:", { name, from, subject, message });
 
   try {
-    // Configurar transporte con Gmail
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // Contraseña de aplicación
+        pass: process.env.EMAIL_PASS,
       },
     });
 
-    // Configurar correo
     const mailOptions = {
       from: from,
-      to: process.env.EMAIL_USER, // Te envías a vos misma
+      to: process.env.EMAIL_USER,
       subject: `Nuevo mensaje de ${name}: ${subject}`,
       html: `
         <h2>Nuevo mensaje desde tu portafolio 💌</h2>
@@ -56,9 +56,7 @@ app.post("/api/contact", async (req, res) => {
       `,
     };
 
-    // Enviar correo
     await transporter.sendMail(mailOptions);
-
     console.log("Correo enviado con éxito");
     res.status(200).json({ message: "Correo enviado correctamente ✅" });
   } catch (error) {
@@ -67,8 +65,6 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-// Arrancar servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
-
