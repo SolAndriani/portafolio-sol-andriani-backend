@@ -1,23 +1,24 @@
 {
-  "type": "module",
-  "name": "portafolio-backend",
+  "name": "portafolio-sol-andriani-backend",
   "version": "1.0.0",
+  "description": "Backend para el formulario de contacto del portafolio de Sol Andriani",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "express",
+    "resend",
+    "portfolio",
+    "backend"
+  ],
+  "author": "Sol Andriani",
+  "license": "MIT",
   "dependencies": {
-    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "express-rate-limit": "^8.1.0",
-    "node-fetch": "^3.3.2",
-    "nodemailer": "^7.0.10",
-    "resend": "^6.3.0"
-  },
-  "description": ""
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2"
+  }
 }
